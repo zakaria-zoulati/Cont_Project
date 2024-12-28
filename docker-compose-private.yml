@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  frontend:
+    image: localhost:5000/frontend:1.0.0
+    container_name: frontend
+    ports:
+      - "3000:80"
+    networks:
+      - aseds
+    depends_on:
+      - backend  # Frontend depends on the backend
+
+  backend:
+    image: localhost:5000/backend:1.0.0
+    container_name: backend
+    ports:
+      - "9001:8080"
+    environment:
+      DB_URL: ${DB_URL}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+    networks:
+      - aseds
+    depends_on:
+      - database  # Backend depends on the database
+
+  database:
+    image: postgres:latest
+    container_name: postgres_db
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    networks:
+      - aseds
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+networks:
+  aseds:
+    external: true
+
+volumes:
+  postgres_data:
